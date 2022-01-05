@@ -16,10 +16,21 @@ def count_unique_letters_in_string(string):
     return len(set(string))
 
 
+def letter_points_for_word(word, letter_occurences):
+    return sum([letter_occurences[letter] for letter in set(word)])
+
+
 def select_guesses(candidates):
+
+    letter_occurrences = defaultdict(int)
+    for word in candidates:
+        letters = set(word)
+        for letter in letters:
+            letter_occurrences[letter] += 1
+
     candidates_list = sorted(
         [
-            (candidate, count_unique_letters_in_string(candidate))
+            (candidate, letter_points_for_word(candidate, letter_occurrences))
             for candidate in candidates
         ],
         key=lambda x: x[1],
@@ -122,7 +133,7 @@ if __name__ == "__main__":
             for pair in pairs:
                 all_wrong_pos_letters.append(pair)
                 letter = pair[0]
-                position = int(pair[1])
+                position = int(pair[1]) - 1
                 candidates = candidates.intersection(
                     letter_position_indices[letter][False][position]
                 )
