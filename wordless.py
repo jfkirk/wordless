@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
     print("")
     print(
-        "Welcome to Wordless! The #1 app in the world for helping you cheat at wordle."
+        "Welcome to Wordless! The #1 app in the world for helping you cheat at Wordle."
     )
 
     running = True

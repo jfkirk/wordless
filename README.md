@@ -12,7 +12,7 @@ python wordless.py
 Wordless will prompt you to enter grey, yellow, and green letters and give you a set of words you can guess to continue.
 
 ```
-Welcome to Wordless! The #1 app in the world for helping you cheat at wordle.
+Welcome to Wordless! The #1 app in the world for helping you cheat at Wordle.
 
 So far we know:
 Missing letters:
@@ -21,10 +21,14 @@ Letters that are present but in the wrong positions:
 []
 Letters that are present and in the correct positions:
 []
+Unknown letters:
+['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 Current number of candidates: 9972
 Maybe try one of these words next:
-bajri, soapy, bakli, crash, jaunt, chewy, hosta, xinca, adieu, ligne
+aries, raise, arise, serai, ariel, reina, irena, erian, tarie, irate
+Or one of these words to reduce the number of candidates:
+aries, raise, arise, serai, ariel, reina, irena, erian, tarie, irate
 
 Please select one of the following:
 1. Input grey letters
