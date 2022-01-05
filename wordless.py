@@ -1,8 +1,7 @@
 from collections import defaultdict
-import nltk
 import pyinputplus as pyip
 
-nltk.download("words")
+from word_list import all_words
 
 
 def chunkstring(string, length):
@@ -52,9 +51,7 @@ def select_guesses(candidates, five_letter_words, unknown_letters):
 
 
 def generate_indices():
-    five_letter_words = {
-        word.lower() for word in nltk.corpus.words.words() if len(word) == 5
-    }
+    five_letter_words = {word.lower() for word in all_words}
 
     # The indices go [letter][in/not-in bool][slot]
     letter_position_indices = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
