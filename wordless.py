@@ -1,8 +1,5 @@
 from collections import defaultdict
-import random
-
 import nltk
-from nltk import chunk
 import pyinputplus as pyip
 
 nltk.download("words")
