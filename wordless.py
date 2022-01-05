@@ -20,7 +20,7 @@ def letter_points_for_word(word, letter_occurences):
     return sum([letter_occurences[letter] for letter in set(word)])
 
 
-def select_guesses(candidates):
+def select_guesses(candidates, five_letter_words, unknown_letters):
 
     letter_occurrences = defaultdict(int)
     for word in candidates:
@@ -37,8 +37,21 @@ def select_guesses(candidates):
         reverse=True,
     )
 
-    num_to_return = min(len(candidates_list), 10)
-    return [candidate for candidate, _ in candidates_list[:num_to_return]]
+    reduction_occurrences = defaultdict(int)
+    for letter in unknown_letters:
+        reduction_occurrences[letter] = letter_occurrences[letter]
+    reductions_list = sorted(
+        [
+            (candidate, letter_points_for_word(candidate, reduction_occurrences))
+            for candidate in five_letter_words
+        ],
+        key=lambda x: x[1],
+        reverse=True,
+    )
+
+    return [
+        candidate for candidate, _ in candidates_list[: min(len(candidates_list), 10)]
+    ], [candidate for candidate, _ in reductions_list[: min(len(reductions_list), 10)]]
 
 
 def generate_indices():
@@ -76,6 +89,7 @@ if __name__ == "__main__":
     all_missing_letters = []
     all_wrong_pos_letters = []
     all_correct_pos_letters = []
+    unknown_letters = [letter for letter in "abcdefghijklmnopqrstuvwxyz"]
 
     print("")
     print(
@@ -93,13 +107,19 @@ if __name__ == "__main__":
         print(all_wrong_pos_letters)
         print("Letters that are present and in the correct positions:")
         print(all_correct_pos_letters)
+        print("Unknown letters:")
+        print(unknown_letters)
 
         print("")
         print("Current number of candidates: {}".format(len(candidates)))
-        print("Maybe try one of these words next:")
 
-        guesses = select_guesses(candidates)
+        guesses, reductions = select_guesses(
+            candidates, five_letter_words, unknown_letters
+        )
+        print("Maybe try one of these words next:")
         print(", ".join(guesses))
+        print("Or one of these words to reduce the number of candidates:")
+        print(", ".join(reductions))
 
         print("")
         input_type_choice = pyip.inputMenu(
@@ -121,6 +141,10 @@ if __name__ == "__main__":
             for letter in missing_letters.lower():
                 all_missing_letters.append(letter)
                 candidates = candidates.intersection(letter_missing_indices[letter])
+                try:
+                    unknown_letters.remove(letter)
+                except ValueError:
+                    pass
 
         # Wrong-position letters entry
         elif input_type_choice == "Input yellow letters":
@@ -137,6 +161,10 @@ if __name__ == "__main__":
                 candidates = candidates.intersection(
                     letter_position_indices[letter][False][position]
                 )
+                try:
+                    unknown_letters.remove(letter)
+                except ValueError:
+                    pass
 
         # Correct letters entry
         elif input_type_choice == "Input green letters":
@@ -153,6 +181,10 @@ if __name__ == "__main__":
                 candidates = candidates.intersection(
                     letter_position_indices[letter][True][position]
                 )
+                try:
+                    unknown_letters.remove(letter)
+                except ValueError:
+                    pass
 
         # Quit
         elif input_type_choice == "Quit":
