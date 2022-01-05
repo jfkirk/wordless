@@ -24,15 +24,28 @@ Letters that are present and in the correct positions:
 Unknown letters:
 ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
-Current number of candidates: 9972
-Maybe try one of these words next:
-aries, raise, arise, serai, ariel, reina, irena, erian, tarie, irate
-Or one of these words to reduce the number of candidates:
-aries, raise, arise, serai, ariel, reina, irena, erian, tarie, irate
+Current number of candidates: 12972
 
-Please select one of the following:
-1. Input grey letters
-2. Input yellow letters
-3. Input green letters
-4. Quit
+Maybe try one of these words next:
+aeros, soare, arose, aesir, arise, reais, raise, serai, aloes, laser
+
+Input the word you guessed: aeros
+Input the colors that correspond to aeros
+'b' for a black letter, 'y' for a yellow letter, 'g' for a green letter
+Input colors: byybb
+
+So far we know:
+Missing letters:
+['a', 'o', 's']
+Letters that are present but in the wrong positions:
+[('e', 1), ('r', 2)]
+Letters that are present and in the correct positions:
+[]
+Unknown letters:
+['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+Current number of candidates: 349
+
+Maybe try one of these words next:
+uteri, urite, tried, tride, rudie, niter, inter, inert, nitre, trine
 ```
