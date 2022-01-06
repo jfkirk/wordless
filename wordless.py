@@ -48,39 +48,33 @@ def get_found_letters(game_state):
 
 def select_guesses(all_words, candidates, game_state, guess_number):
 
+    found_letters = get_found_letters(game_state)
     letter_occurrences = defaultdict(float)
     for word in candidates:
-        letters = set(word)
-        for letter in letters:
+        for letter in set(word):
+            # We want to sort primarily on content of unknown letters and
+            # secondarily on the number of letters we already know about
             if letter in game_state["unknown_letters"]:
+                letter_occurrences[letter] += 100000
+            if letter in found_letters:
                 letter_occurrences[letter] += 1
 
-    # After a few guesses, make greedy guesses within the candidate set
-    if guess_number >= 3:
-        candidates_list = sorted(
-            [
-                (
-                    candidate,
-                    letter_points_for_word(candidate, letter_occurrences),
-                )
-                for candidate in candidates
-            ],
-            key=lambda x: x[1],
-            reverse=True,
-        )
-    # For the first few guesses, make guesses that maximize coverage
-    else:
-        candidates_list = sorted(
-            [
-                (
-                    candidate,
-                    letter_points_for_word(candidate, letter_occurrences),
-                )
-                for candidate in all_words
-            ],
-            key=lambda x: x[1],
-            reverse=True,
-        )
+    # Once we're narrowing in, only pick from actual candidates
+    set_to_select_from = all_words
+    if guess_number >= 4 or len(candidates) < 5:
+        set_to_select_from = candidates
+
+    candidates_list = sorted(
+        [
+            (
+                candidate,
+                letter_points_for_word(candidate, letter_occurrences),
+            )
+            for candidate in set_to_select_from
+        ],
+        key=lambda x: x[1],
+        reverse=True,
+    )
 
     return [
         candidate for candidate, _ in candidates_list[: min(len(candidates_list), 10)]
@@ -132,7 +126,8 @@ def process_response(input_word, response_colors, game_state):
         if response_colors[i] == "y"
     ]
     for pair in wrong_position_letters:
-        game_state["all_wrong_pos_letters"].append(pair)
+        if pair not in game_state["all_wrong_pos_letters"]:
+            game_state["all_wrong_pos_letters"].append(pair)
         try:
             game_state["unknown_letters"].remove(pair[0])
         except ValueError:
@@ -145,7 +140,8 @@ def process_response(input_word, response_colors, game_state):
         if response_colors[i] == "g"
     ]
     for pair in right_position_letters:
-        game_state["all_correct_pos_letters"].append(pair)
+        if pair not in game_state["all_correct_pos_letters"]:
+            game_state["all_correct_pos_letters"].append(pair)
         try:
             game_state["unknown_letters"].remove(pair[0])
         except ValueError:
@@ -203,7 +199,9 @@ if __name__ == "__main__":
         print(", ".join(guesses))
 
         print("")
-        input_word = pyip.inputStr("Input the word you guessed: ", blank=False).lower()
+        input_word = pyip.inputStr(
+            "Input the word you guessed (Guess #{}): ".format(n_guesses), blank=False
+        ).lower()
         print(f"Input the colors that correspond to {input_word}")
         print("'b' for a black letter, 'y' for a yellow letter, 'g' for a green letter")
         print(

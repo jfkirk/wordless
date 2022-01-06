@@ -59,12 +59,16 @@ if __name__ == "__main__":
             )[0]
 
             response = generate_response(guess=guess, word=word)
-            # print("Guessed {} got response {}".format(guess, response))
 
             game_state = process_response(guess, response, game_state)
 
+            # print("Guessed {} got response {}".format(guess, response))
+            # print(game_state)
+
             guesses += 1
-            guess_sequence.append(f"{guess}, {len(get_found_letters(game_state))}")
+            guess_sequence.append(
+                f"{guess}, {len(get_found_letters(game_state))}, {len(candidates)}"
+            )
             if guess == word:
                 guessing = False
 
