@@ -1,6 +1,12 @@
 import statistics
 
-from wordless import generate_index, select_guesses, process_response, filter_candidates
+from wordless import (
+    generate_index,
+    select_guesses,
+    process_response,
+    filter_candidates,
+    get_found_letters,
+)
 from word_list import all_words
 
 
@@ -28,10 +34,12 @@ if __name__ == "__main__":
     n_words = len(index["five_letter_words"])
     for k, word in enumerate(index["five_letter_words"]):
 
-        all_correct_pos_letters = []
-        all_wrong_pos_letters = []
-        all_missing_letters = []
-        unknown_letters = [letter for letter in "abcdefghijklmnopqrstuvwxyz"]
+        game_state = {
+            "all_missing_letters": [],
+            "all_wrong_pos_letters": [],
+            "all_correct_pos_letters": [],
+            "unknown_letters": [letter for letter in "abcdefghijklmnopqrstuvwxyz"],
+        }
 
         guessing = True
         guesses = 0
@@ -40,40 +48,32 @@ if __name__ == "__main__":
 
             # Simulate guessing at this word
             candidates = filter_candidates(
-                all_correct_pos_letters=all_correct_pos_letters,
-                all_wrong_pos_letters=all_wrong_pos_letters,
-                all_missing_letters=all_missing_letters,
+                game_state=game_state,
                 index=index,
             )
             guess = select_guesses(
-                candidates=candidates, unknown_letters=unknown_letters
+                all_words=all_words,
+                candidates=candidates,
+                game_state=game_state,
+                guess_number=guesses,
             )[0]
 
             response = generate_response(guess=guess, word=word)
+            # print("Guessed {} got response {}".format(guess, response))
 
-            (
-                all_missing_letters,
-                all_wrong_pos_letters,
-                all_correct_pos_letters,
-                unknown_letters,
-            ) = process_response(
-                guess,
-                response,
-                all_missing_letters,
-                all_wrong_pos_letters,
-                all_correct_pos_letters,
-                unknown_letters,
-            )
+            game_state = process_response(guess, response, game_state)
 
             guesses += 1
-            guess_sequence.append(guess)
+            guess_sequence.append(f"{guess}, {len(get_found_letters(game_state))}")
             if guess == word:
                 guessing = False
 
         print(f"{k}/{n_words} Guessed {word} with {guesses} guesses: {guess_sequence}")
         guess_counts[word] = guesses
+        if k >= 1000:
+            break
 
     print(f"Mean: {statistics.mean(guess_counts.values())}")
     print(f"Stdev: {statistics.stdev(guess_counts.values())}")
-    print(f"Min: {min(guess_counts.values())}")
     print(f"Max: {max(guess_counts.values())}")
+    print(f"Failures: {sum([val > 5 for val in guess_counts.values()])}")
