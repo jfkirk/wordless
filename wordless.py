@@ -1,4 +1,5 @@
 from collections import defaultdict
+from statistics import mean
 import pyinputplus as pyip
 
 from word_list import all_words
@@ -55,7 +56,7 @@ def get_green_letters(game_state):
     return {pair[0] for pair in game_state["all_correct_pos_letters"]}
 
 
-def select_guesses(all_words, candidates, game_state, guess_number):
+def select_guesses(all_words, candidates, game_state):
 
     yellow_letters = get_yellow_letters(game_state)
     green_letters = get_green_letters(game_state)
@@ -72,6 +73,7 @@ def select_guesses(all_words, candidates, game_state, guess_number):
                 letter_occurrences[letter] += 1
 
     # As long as we're guessing, we have at least 1 guess left by definition
+    guess_number = len(game_state["guessed_words"])
     remaining_guesses = max(1, 6 - guess_number)
     # Once we're narrowing in, only pick from actual candidates
     set_to_select_from = all_words
@@ -194,12 +196,13 @@ if __name__ == "__main__":
         "Welcome to Wordless! The #1 app in the world for helping you cheat at Wordle."
     )
 
-    n_guesses = 0
     running = True
     while running:
 
         print("")
         print("So far we know:")
+        print("Guessed words:")
+        print(game_state["guessed_words"])
         print("Missing letters:")
         print(game_state["all_missing_letters"])
         print("Letters that are present but in the wrong positions:")
@@ -222,14 +225,15 @@ if __name__ == "__main__":
             index["five_letter_words"],
             candidates,
             game_state,
-            n_guesses,
         )
         print("Maybe try one of these words next:")
         print(", ".join(guesses))
 
         print("")
         input_word = pyip.inputStr(
-            "Input the word you guessed (Guess #{}): ".format(n_guesses + 1),
+            "Input the word you guessed (Guess #{}): ".format(
+                len(game_state["guessed_words"]) + 1
+            ),
             blank=False,
         ).lower()
         print(f"Input the colors that correspond to {input_word}")
@@ -240,4 +244,3 @@ if __name__ == "__main__":
         response_colors = pyip.inputStr("Input colors: ", blank=False).lower()
 
         game_state = process_response(input_word, response_colors, game_state)
-        n_guesses += 1

@@ -43,7 +43,6 @@ if __name__ == "__main__":
         }
 
         guessing = True
-        guesses = 0
         guess_sequence = []
         while guessing:
 
@@ -56,7 +55,6 @@ if __name__ == "__main__":
                 all_words=all_words,
                 candidates=candidates,
                 game_state=game_state,
-                guess_number=guesses,
             )[0]
 
             response = generate_response(guess=guess, word=word)
@@ -66,15 +64,16 @@ if __name__ == "__main__":
             # print("Guessed {} got response {}".format(guess, response))
             # print(game_state)
 
-            guesses += 1
             guess_sequence.append(
                 f"{guess}, {len(get_yellow_letters(game_state))}, {len(candidates)}"
             )
             if guess == word:
                 guessing = False
 
-        print(f"{k}/{n_words} Guessed {word} with {guesses} guesses: {guess_sequence}")
-        guess_counts[word] = guesses
+        print(
+            f"{k}/{n_words} Guessed {word} with {len(game_state['guessed_words'])} guesses: {guess_sequence}"
+        )
+        guess_counts[word] = len(game_state["guessed_words"])
         if k >= 1000:
             break
 
