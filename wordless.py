@@ -51,17 +51,24 @@ def get_yellow_letters(game_state):
     return found_letters
 
 
+def get_green_letters(game_state):
+    return {pair[0] for pair in game_state["all_correct_pos_letters"]}
+
+
 def select_guesses(all_words, candidates, game_state, guess_number):
 
-    found_letters = get_yellow_letters(game_state)
+    yellow_letters = get_yellow_letters(game_state)
+    green_letters = get_green_letters(game_state)
     letter_occurrences = defaultdict(float)
     for word in candidates:
         for letter in set(word):
             # We want to sort primarily on content of unknown letters and
             # secondarily on the number of letters we already know about
             if letter in game_state["unknown_letters"]:
-                letter_occurrences[letter] += 100000
-            if letter in found_letters:
+                letter_occurrences[letter] += 1000000
+            if letter in yellow_letters:
+                letter_occurrences[letter] += 10
+            if letter in green_letters:
                 letter_occurrences[letter] += 1
 
     # As long as we're guessing, we have at least 1 guess left by definition
