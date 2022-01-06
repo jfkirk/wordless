@@ -52,9 +52,9 @@ if __name__ == "__main__":
                 index=index,
             )
             guess = select_guesses(
-                all_words=all_words,
                 candidates=candidates,
                 game_state=game_state,
+                index=index,
             )[0]
 
             response = generate_response(guess=guess, word=word)

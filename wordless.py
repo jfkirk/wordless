@@ -56,7 +56,7 @@ def get_green_letters(game_state):
     return {pair[0] for pair in game_state["all_correct_pos_letters"]}
 
 
-def select_guesses(all_words, candidates, game_state):
+def select_guesses(candidates, game_state, index):
 
     yellow_letters = get_yellow_letters(game_state)
     green_letters = get_green_letters(game_state)
@@ -76,7 +76,7 @@ def select_guesses(all_words, candidates, game_state):
     guess_number = len(game_state["guessed_words"])
     remaining_guesses = max(1, 6 - guess_number)
     # Once we're narrowing in, only pick from actual candidates
-    set_to_select_from = all_words
+    set_to_select_from = index["five_letter_words"].copy()
     if (len(candidates) <= remaining_guesses) or (remaining_guesses == 1):
         set_to_select_from = candidates
 
@@ -222,25 +222,37 @@ if __name__ == "__main__":
 
         print("")
         guesses = select_guesses(
-            index["five_letter_words"],
-            candidates,
-            game_state,
+            candidates=candidates,
+            game_state=game_state,
+            index=index,
         )
         print("Maybe try one of these words next:")
         print(", ".join(guesses))
 
         print("")
-        input_word = pyip.inputStr(
+        print(
             "Input the word you guessed (Guess #{}): ".format(
                 len(game_state["guessed_words"]) + 1
-            ),
+            )
+        )
+        print("Or type 'exit' to quit.")
+        input_word = pyip.inputStr(
+            "",
             blank=False,
         ).lower()
+        if input_word == "exit":
+            running = False
+            break
         print(f"Input the colors that correspond to {input_word}")
         print("'b' for a black letter, 'y' for a yellow letter, 'g' for a green letter")
         print(
             "For example, if you played 'dogma' and got yellow-black-green-yellow-black, then enter 'ybgyb'"
         )
+        print("Or type 'exit' to quit.")
         response_colors = pyip.inputStr("Input colors: ", blank=False).lower()
+
+        if response_colors == "exit":
+            running = False
+            break
 
         game_state = process_response(input_word, response_colors, game_state)
