@@ -39,6 +39,7 @@ if __name__ == "__main__":
             "all_wrong_pos_letters": [],
             "all_correct_pos_letters": [],
             "unknown_letters": [letter for letter in "abcdefghijklmnopqrstuvwxyz"],
+            "guessed_words": [],
         }
 
         guessing = True
@@ -80,4 +81,4 @@ if __name__ == "__main__":
     print(f"Mean: {statistics.mean(guess_counts.values())}")
     print(f"Stdev: {statistics.stdev(guess_counts.values())}")
     print(f"Max: {max(guess_counts.values())}")
-    print(f"Failures: {sum([val > 5 for val in guess_counts.values()])}")
+    print(f"Failures: {sum([val > 6 for val in guess_counts.values()])}")

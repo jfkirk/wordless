@@ -1,4 +1,4 @@
-all_words = [
+all_words = {
     "cigar",
     "rebut",
     "sissy",
@@ -12971,4 +12971,4 @@ all_words = [
     "zygon",
     "zymes",
     "zymic",
-]
+}

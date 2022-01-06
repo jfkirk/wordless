@@ -12,8 +12,10 @@ def count_unique_letters_in_string(string):
     return len(set(string))
 
 
-def letter_points_for_word(word, letter_occurences):
-    return sum([letter_occurences[letter] for letter in set(word)])
+def letter_points_for_word(word, letter_occurences, count_duplicate_letters=False):
+    if not count_duplicate_letters:
+        word = set(word)
+    return sum([letter_occurences[letter] for letter in word])
 
 
 def filter_candidates(game_state, index):
@@ -62,10 +64,21 @@ def select_guesses(all_words, candidates, game_state, guess_number):
             if letter in found_letters:
                 letter_occurrences[letter] += 1
 
+    # As long as we're guessing, we have at least 1 guess left by definition
+    remaining_guesses = max(1, 6 - guess_number)
     # Once we're narrowing in, only pick from actual candidates
     set_to_select_from = all_words
-    if guess_number >= 4 or len(candidates) < 5:
+    if (len(candidates) <= remaining_guesses) or (remaining_guesses == 1):
         set_to_select_from = candidates
+
+    # Pop out already-guessed words to prevent loops when using all_words
+    for word in game_state["guessed_words"]:
+        try:
+            set_to_select_from.remove(word)
+        except KeyError:
+            pass
+        except ValueError:
+            pass
 
     candidates_list = sorted(
         [
@@ -111,12 +124,17 @@ def generate_index():
 
 
 def process_response(input_word, response_colors, game_state):
+
+    # Add the word we guessed
+    game_state["guessed_words"].append(input_word)
+
     # Process missing letters
     missing_letters = [
         input_word[i] for i in range(0, len(input_word)) if response_colors[i] == "b"
     ]
     for letter in missing_letters:
-        game_state["all_missing_letters"].append(letter)
+        if letter not in game_state["all_missing_letters"]:
+            game_state["all_missing_letters"].append(letter)
         try:
             game_state["unknown_letters"].remove(letter)
         except ValueError:
@@ -161,6 +179,7 @@ if __name__ == "__main__":
         "all_wrong_pos_letters": [],
         "all_correct_pos_letters": [],
         "unknown_letters": [letter for letter in "abcdefghijklmnopqrstuvwxyz"],
+        "guessed_words": [],
     }
 
     print("")
