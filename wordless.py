@@ -37,18 +37,21 @@ def filter_candidates(game_state, index):
     return candidates
 
 
-def get_found_letters(game_state):
+def get_yellow_letters(game_state):
     found_letters = set()
-    for pair in game_state["all_correct_pos_letters"]:
-        found_letters.add(pair[0])
     for pair in game_state["all_wrong_pos_letters"]:
         found_letters.add(pair[0])
+    for pair in game_state["all_correct_pos_letters"]:
+        try:
+            found_letters.remove(pair[0])
+        except KeyError:
+            pass
     return found_letters
 
 
 def select_guesses(all_words, candidates, game_state, guess_number):
 
-    found_letters = get_found_letters(game_state)
+    found_letters = get_yellow_letters(game_state)
     letter_occurrences = defaultdict(float)
     for word in candidates:
         for letter in set(word):
@@ -200,7 +203,8 @@ if __name__ == "__main__":
 
         print("")
         input_word = pyip.inputStr(
-            "Input the word you guessed (Guess #{}): ".format(n_guesses), blank=False
+            "Input the word you guessed (Guess #{}): ".format(n_guesses + 1),
+            blank=False,
         ).lower()
         print(f"Input the colors that correspond to {input_word}")
         print("'b' for a black letter, 'y' for a yellow letter, 'g' for a green letter")

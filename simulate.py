@@ -5,7 +5,7 @@ from wordless import (
     select_guesses,
     process_response,
     filter_candidates,
-    get_found_letters,
+    get_yellow_letters,
 )
 from word_list import all_words
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
             guesses += 1
             guess_sequence.append(
-                f"{guess}, {len(get_found_letters(game_state))}, {len(candidates)}"
+                f"{guess}, {len(get_yellow_letters(game_state))}, {len(candidates)}"
             )
             if guess == word:
                 guessing = False
