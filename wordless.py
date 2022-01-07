@@ -13,10 +13,25 @@ def count_unique_letters_in_string(string):
     return len(set(string))
 
 
-def letter_points_for_word(word, letter_occurences, count_duplicate_letters=False):
-    if not count_duplicate_letters:
-        word = set(word)
-    return sum([letter_occurences[letter] for letter in word])
+def calculate_letter_occurrences(game_state, candidates):
+    yellow_letters = get_yellow_letters(game_state)
+    green_letters = get_green_letters(game_state)
+    letter_occurrences = defaultdict(float)
+    for word in candidates:
+        for letter in set(word):
+            # We want to sort primarily on content of unknown letters and
+            # secondarily on the number of letters we already know about
+            if letter in game_state["unknown_letters"]:
+                letter_occurrences[letter] += 1000000
+            if letter in yellow_letters:
+                letter_occurrences[letter] += 10
+            if letter in green_letters:
+                letter_occurrences[letter] += 1
+    return letter_occurrences
+
+
+def letter_points_for_word(word, letter_occurrences):
+    return sum([letter_occurrences[letter] for letter in set(word)])
 
 
 def filter_candidates(game_state, index):
@@ -58,19 +73,9 @@ def get_green_letters(game_state):
 
 def select_guesses(candidates, game_state, index):
 
-    yellow_letters = get_yellow_letters(game_state)
-    green_letters = get_green_letters(game_state)
-    letter_occurrences = defaultdict(float)
-    for word in candidates:
-        for letter in set(word):
-            # We want to sort primarily on content of unknown letters and
-            # secondarily on the number of letters we already know about
-            if letter in game_state["unknown_letters"]:
-                letter_occurrences[letter] += 1000000
-            if letter in yellow_letters:
-                letter_occurrences[letter] += 10
-            if letter in green_letters:
-                letter_occurrences[letter] += 1
+    letter_occurrences = calculate_letter_occurrences(
+        game_state=game_state, candidates=candidates
+    )
 
     # As long as we're guessing, we have at least 1 guess left by definition
     guess_number = len(game_state["guessed_words"])
@@ -100,6 +105,8 @@ def select_guesses(candidates, game_state, index):
         key=lambda x: x[1],
         reverse=True,
     )
+
+    # print(candidates_list[:10])
 
     return [
         candidate for candidate, _ in candidates_list[: min(len(candidates_list), 10)]
