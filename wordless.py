@@ -30,8 +30,32 @@ def calculate_letter_occurrences(game_state, candidates):
     return letter_occurrences
 
 
-def letter_points_for_word(word, letter_occurrences):
-    return sum([letter_occurrences[letter] for letter in set(word)])
+def letter_points_for_word(word, letter_occurrences, game_state):
+    seen_letters = set()
+    points = 0
+    for position, letter in enumerate(word):
+
+        # Skip letters we know to be absent from the answer
+        if letter in game_state["all_missing_letters"]:
+            seen_letters.add(letter)
+            continue
+
+        # Count unknown letters if we haven't already seen them in this word
+        if letter in game_state["unknown_letters"]:
+            if letter not in seen_letters:
+                points += letter_occurrences[letter]
+                seen_letters.add(letter)
+            continue
+
+        # Count a known letter if its in a position we haven't seen before
+        if ((letter, position) not in game_state["all_correct_pos_letters"]) and (
+            (letter, position) not in game_state["all_wrong_pos_letters"]
+        ):
+            points += letter_occurrences[letter]
+            seen_letters.add(letter)
+            continue
+
+    return points
 
 
 def filter_candidates(game_state, index):
@@ -73,6 +97,13 @@ def get_green_letters(game_state):
 
 def select_guesses(candidates, game_state, index):
 
+    # 'cares' contains the highest position-sensitive information for a first guess
+    # this is costly to calculate over 12000 candidates each time, so we short-circuit it
+    if len(game_state["guessed_words"]) == 0:
+        return [
+            "cares",
+        ]
+
     letter_occurrences = calculate_letter_occurrences(
         game_state=game_state, candidates=candidates
     )
@@ -98,7 +129,7 @@ def select_guesses(candidates, game_state, index):
         [
             (
                 candidate,
-                letter_points_for_word(candidate, letter_occurrences),
+                letter_points_for_word(candidate, letter_occurrences, game_state),
             )
             for candidate in set_to_select_from
         ],
