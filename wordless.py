@@ -269,18 +269,19 @@ if __name__ == "__main__":
 
         print("")
         print(
-            "Input the word you guessed (Guess #{}): ".format(
+            "Input the word you guessed (Guess #{})".format(
                 len(game_state["guessed_words"]) + 1
             )
         )
         print("Or type 'exit' to quit.")
         input_word = pyip.inputStr(
-            "",
+            "Input word: ",
             blank=False,
         ).lower()
         if input_word == "exit":
             running = False
             break
+        print("")
         print(f"Input the colors that correspond to {input_word}")
         print("'b' for a black letter, 'y' for a yellow letter, 'g' for a green letter")
         print(
