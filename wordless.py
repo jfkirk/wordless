@@ -215,6 +215,14 @@ def process_response(input_word, response_colors, game_state):
         except ValueError:
             pass
 
+    for letter, _ in game_state["all_correct_pos_letters"]:
+        if letter in game_state["all_missing_letters"]:
+            game_state["all_missing_letters"].remove(letter)
+
+    for letter, _ in game_state["all_wrong_pos_letters"]:
+        if letter in game_state["all_missing_letters"]:
+            game_state["all_missing_letters"].remove(letter)
+
     return game_state
 
 
